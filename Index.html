@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TaskFlow Pro — SaaS Project & Agency Management by Inaam Farid</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Inter"', 'system-ui', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            200: '#c7d2fe',
+                            300: '#a5b4fc',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            800: '#3730a3',
+                            900: '#312e81',
+                        },
+                        slateDark: {
+                            950: '#090d16',
+                            900: '#0f172a',
+                            850: '#141d31',
+                            800: '#1e293b',
+                            700: '#334155',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar for smooth SaaS polish */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 116, 139, 0.35);
+            border-radius: 9999px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(99, 102, 241, 0.6);
+        }
+
+        /* Smooth View Fade Transition */
+        @keyframes fadeSlideUp {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .view-animate {
+            animation: fadeSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="font-sans antialiased bg-slate-50 text-slate-900 dark:bg-slateDark-950 dark:text-slate-100 transition-colors duration-200">
+
+    <!-- Main App Wrapper -->
+    <div class="min-h-screen flex overflow-x-hidden">
+
+        <!-- Mobile Sidebar Backdrop -->
+        <div id="sidebar-backdrop" onclick="toggleMobileSidebar()" class="fixed inset-0 z-40 bg-slate-950/60 backdrop-blur-sm hidden lg:hidden"></div>
+
+        <!-- SIDEBAR NAVIGATION -->
+        <aside id="sidebar" class="fixed lg:static inset-y-0 left-0 z-50 w-68 max-w-[270px] transform -translate-x-full lg:translate-x-0 transition-transform duration-300 ease-in-out bg-white dark:bg-slateDark-900 border-r border-slate-200 dark:border-slate-800 flex flex-col justify-between shrink-0">
+            
+            <!-- Top Logo & Navigation Links -->
+            <div>
+                <!-- Brand Header -->
+                <div class="h-16 px-6 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-400 flex items-center justify-center text-white font-bold shadow-md shadow-brand-500/30">
+                            <i class="fa-solid fa-bolt text-sm"></i>
+                        </div>
+                        <div>
+                            <span class="font-bold text-lg tracking-tight text-slate-900 dark:text-white">TaskFlow<span class="text-brand-500">Pro</span></span>
+                            <span class="block text-[10px] font-medium uppercase tracking-widest text-slate-400">Workspace v2.4</span>
+                        </div>
+                    </div>
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+
+                <!-- Navigation Menu -->
+                <div class="px-4 py-6 space-y-1.5">
+                    <p class="px-3 text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-3">Main Menu</p>
+                    
+                    <button onclick="switchView('overview')" data-view="overview" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                        <i class="fa-solid fa-chart-pie w-4 text-center"></i>
+                        <span>Dashboard Overview</span>
+                    </button>
+
+                    <button onclick="switchView('kanban')" data-view="kanban" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slateDark-800 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <i class="fa-solid fa-columns w-4 text-center"></i>
+                            <span>Kanban Task Board</span>
+                        </div>
+                        <span id="sidebar-task-badge" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-brand-100 text-brand-700 dark:bg-brand-500/20 dark:text-brand-300">0</span>
+                    </button>
+
+                    <button onclick="switchView('clients')" data-view="clients" class="nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slateDark-800 transition-all">
+                        <div class="flex items-center gap-3.5">
+                            <i class="fa-solid fa-users w-4 text-center"></i>
+                            <span>Client Directory</span>
+                        </div>
+                        <span id="sidebar-client-badge" class="px-2 py-0.5 text-xs font-semibold rounded-full bg-slate-200 text-slate-700 dark:bg-slate-800 dark:text-slate-300">0</span>
+                    </button>
+
+                    <button onclick="switchView('analytics')" data-view="analytics" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slateDark-800 transition-all">
+                        <i class="fa-solid fa-sack-dollar w-4 text-center"></i>
+                        <span>Revenue &amp; Analytics</span>
+                    </button>
+
+                    <button onclick="switchView('settings')" data-view="settings" class="nav-item w-full flex items-center gap-3.5 px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slateDark-800 transition-all">
+                        <i class="fa-solid fa-sliders w-4 text-center"></i>
+                        <span>Settings</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Bottom Agency Owner Profile Card -->
+            <div class="p-4 border-t border-slate-200 dark:border-slate-800">
+                <div class="p-3 rounded-2xl bg-slate-100 dark:bg-slateDark-850 border border-slate-200/80 dark:border-slate-800 flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full bg-gradient-to-br from-brand-500 to-purple-600 flex items-center justify-center text-white font-bold text-sm shrink-0 shadow">
+                        IF
+                    </div>
+                    <div class="min-w-0 flex-1">
+                        <p id="sidebar-owner-name" class="text-sm font-semibold text-slate-900 dark:text-white truncate">Inaam Farid</p>
+                        <p id="sidebar-agency-name" class="text-xs text-slate-500 dark:text-slate-400 truncate">Lead Architect • Pro Plan</p>
+                    </div>
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 shrink-0" title="Online"></span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- RIGHT MAIN CONTENT AREA -->
+        <div class="flex-1 flex flex-col min-w-0">
+
+            <!-- TOP HEADER BAR -->
+            <header class="sticky top-0 z-30 h-16 bg-white/85 dark:bg-slateDark-900/85 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 px-4 sm:px-8 flex items-center justify-between gap-4">
+                
+                <!-- Left: Mobile Menu Trigger + Global Search -->
+                <div class="flex items-center gap-3 flex-1 max-w-md">
+                    <button onclick="toggleMobileSidebar()" class="lg:hidden p-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-slate-600 dark:text-slate-300 hover:text-brand-500">
+                        <i class="fa-solid fa-bars"></i>
+                    </button>
+
+                    <div class="relative w-full">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                        <input 
+                            type="text" 
+                            id="global-search-input"
+                            oninput="handleGlobalSearch(this.value)"
+                            placeholder="Search tasks, clients, or projects..." 
+                            class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 focus:bg-white dark:focus:bg-slateDark-950 text-sm text-slate-900 dark:text-slate-100 placeholder-slate-400 focus:outline-none transition-all"
+                        >
+                    </div>
+                </div>
+
+                <!-- Right: Quick '+ New Project', Notifications & Theme Toggle -->
+                <div class="flex items-center gap-2.5 sm:gap-3">
+                    <!-- Quick '+ New Project / Task' Modal Trigger -->
+                    <button onclick="openCreateModal('project')" class="px-3.5 sm:px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-sm shadow-brand-600/25 flex items-center gap-2 transition-all active:scale-95">
+                        <i class="fa-solid fa-plus"></i>
+                        <span class="hidden sm:inline">New Project</span>
+                    </button>
+
+                    <!-- Notification Bell with Dropdown -->
+                    <div class="relative">
+                        <button onclick="toggleNotifications()" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slateDark-800 hover:bg-slate-200 dark:hover:bg-slateDark-700 text-slate-600 dark:text-slate-300 flex items-center justify-center relative transition-colors" title="Notifications">
+                            <i class="fa-regular fa-bell"></i>
+                            <span id="notif-dot" class="absolute top-2.5 right-2.5 w-2 h-2 rounded-full bg-rose-500 ring-2 ring-white dark:ring-slateDark-800"></span>
+                        </button>
+
+                        <!-- Notification Popover -->
+                        <div id="notif-dropdown" class="hidden absolute right-0 mt-2 w-80 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-xl p-4 z-50">
+                            <div class="flex items-center justify-between pb-3 border-b border-slate-200 dark:border-slate-800">
+                                <span class="text-sm font-semibold text-slate-900 dark:text-white">Workspace Activity</span>
+                                <button onclick="markNotificationsRead()" class="text-xs text-brand-500 hover:underline">Mark all read</button>
+                            </div>
+                            <div id="notif-list" class="py-2 space-y-2.5 max-h-60 overflow-y-auto text-xs">
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slateDark-850">
+                                    <p class="font-medium text-slate-800 dark:text-slate-200">Milestone Approved: FinTech Mobile App</p>
+                                    <p class="text-slate-400 mt-0.5">Stripe &amp; Apex Labs released $4,200 escrow.</p>
+                                </div>
+                                <div class="p-2.5 rounded-xl bg-slate-50 dark:bg-slateDark-850">
+                                    <p class="font-medium text-slate-800 dark:text-slate-200">New Sprint Task Assigned</p>
+                                    <p class="text-slate-400 mt-0.5">API Rate Limiting &amp; Redis Cache moved to Review.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Theme Toggle (Modern Dark / Clean Light) -->
+                    <button onclick="toggleTheme()" class="w-10 h-10 rounded-xl bg-slate-100 dark:bg-slateDark-800 hover:bg-slate-200 dark:hover:bg-slateDark-700 text-slate-600 dark:text-amber-400 flex items-center justify-center transition-colors" title="Toggle Dark / Light Mode">
+                        <i id="theme-icon" class="fa-solid fa-sun"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- DYNAMIC VIEW CONTAINER -->
+            <main class="flex-1 p-4 sm:p-8 max-w-7xl w-full mx-auto space-y-8">
+
+                <!-- ========================================================= -->
+                <!-- VIEW 1: DASHBOARD OVERVIEW                                -->
+                <!-- ========================================================= -->
+                <section id="view-overview" class="view-section view-animate space-y-8">
+                    <!-- Welcome Banner -->
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-bold tracking-tight text-slate-900 dark:text-white">
+                                Welcome back, <span id="welcome-owner-name" class="text-brand-500">Inaam Farid</span>
+                            </h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">
+                                Here is what’s happening across your agency projects, sprint tasks, and client retainers today.
+                            </p>
+                        </div>
+                        <div class="flex items-center gap-2.5">
+                            <button onclick="openCreateModal('task')" class="px-4 py-2.5 rounded-xl bg-white dark:bg-slateDark-850 border border-slate-200 dark:border-slate-800 hover:border-brand-500 text-xs sm:text-sm font-medium text-slate-700 dark:text-slate-200 transition-all">
+                                <i class="fa-solid fa-list-check mr-1.5 text-brand-500"></i> + Quick Task
+                            </button>
+                            <button onclick="switchView('kanban')" class="px-4 py-2.5 rounded-xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs sm:text-sm font-semibold hover:opacity-90 transition-all">
+                                Open Sprint Board
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4 KPI Summary Cards -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5">
+                        <!-- KPI 1: Active Projects -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-brand-500/40 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Active Projects</span>
+                                <div class="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-500/15 text-brand-600 dark:text-brand-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-folder-open text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <h3 id="kpi-active-projects" class="text-3xl font-bold text-slate-900 dark:text-white">6</h3>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                                    <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> +18.2%
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">Across 4 enterprise retainers</p>
+                        </div>
+
+                        <!-- KPI 2: Monthly Revenue -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-brand-500/40 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Monthly Revenue</span>
+                                <div class="w-9 h-9 rounded-xl bg-emerald-50 dark:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-dollar-sign text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <h3 id="kpi-monthly-revenue" class="text-3xl font-bold text-slate-900 dark:text-white">$28,450</h3>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                                    <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> +24.5%
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">+$5,600 vs previous month</p>
+                        </div>
+
+                        <!-- KPI 3: Tasks Completed -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-brand-500/40 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Tasks Completed</span>
+                                <div class="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-circle-check text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <h3 id="kpi-tasks-completed" class="text-3xl font-bold text-slate-900 dark:text-white">0</h3>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400">
+                                    <i class="fa-solid fa-arrow-trend-up text-[10px]"></i> 94% SLA
+                                </span>
+                            </div>
+                            <p id="kpi-tasks-subtext" class="text-xs text-slate-400 mt-2">Synced live with Kanban Board</p>
+                        </div>
+
+                        <!-- KPI 4: Client Satisfaction -->
+                        <div class="p-5 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm hover:border-brand-500/40 transition-all">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Client Satisfaction</span>
+                                <div class="w-9 h-9 rounded-xl bg-purple-50 dark:bg-purple-500/15 text-purple-600 dark:text-purple-400 flex items-center justify-center">
+                                    <i class="fa-solid fa-star text-sm"></i>
+                                </div>
+                            </div>
+                            <div class="mt-4 flex items-baseline justify-between">
+                                <h3 class="text-3xl font-bold text-slate-900 dark:text-white">99.2%</h3>
+                                <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400">
+                                    Top Rated Plus
+                                </span>
+                            </div>
+                            <p class="text-xs text-slate-400 mt-2">5.0 Avg across 42 Upwork contracts</p>
+                        </div>
+                    </div>
+
+                    <!-- Interactive Chart & Urgent Sprint Snapshot -->
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <!-- Chart.js Monthly Revenue vs Expenses -->
+                        <div class="lg:col-span-8 p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm">
+                            <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
+                                <div>
+                                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Monthly Revenue vs. Expenses</h2>
+                                    <p class="text-xs text-slate-400">Agency cash flow performance over the last 7 months (USD)</p>
+                                </div>
+                                <div class="flex items-center gap-2 bg-slate-100 dark:bg-slateDark-800 p-1 rounded-xl text-xs">
+                                    <button onclick="updateChartType('bar')" id="btn-chart-bar" class="px-3 py-1.5 rounded-lg font-medium bg-white dark:bg-slateDark-900 text-slate-900 dark:text-white shadow-sm">Bar</button>
+                                    <button onclick="updateChartType('line')" id="btn-chart-line" class="px-3 py-1.5 rounded-lg font-medium text-slate-500 dark:text-slate-400">Line</button>
+                                </div>
+                            </div>
+                            <div class="relative h-72 w-full">
+                                <canvas id="overviewRevenueChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Priority Tasks Snapshot -->
+                        <div class="lg:col-span-4 p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col justify-between">
+                            <div>
+                                <div class="flex items-center justify-between mb-4">
+                                    <h2 class="text-lg font-bold text-slate-900 dark:text-white">Priority Queue</h2>
+                                    <button onclick="switchView('kanban')" class="text-xs font-semibold text-brand-500 hover:underline">View All</button>
+                                </div>
+                                <div id="overview-priority-list" class="space-y-3">
+                                    <!-- Populated dynamically via JS -->
+                                </div>
+                            </div>
+
+                            <div class="mt-6 pt-4 border-t border-slate-200 dark:border-slate-800">
+                                <div class="flex items-center justify-between text-xs mb-2">
+                                    <span class="font-medium text-slate-500 dark:text-slate-400">Sprint Completion Rate</span>
+                                    <span id="overview-progress-pct" class="font-bold text-brand-500">0%</span>
+                                </div>
+                                <div class="w-full h-2 rounded-full bg-slate-100 dark:bg-slateDark-800 overflow-hidden">
+                                    <div id="overview-progress-bar" class="h-full bg-gradient-to-r from-brand-600 to-indigo-400 rounded-full transition-all duration-500" style="width: 0%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 2: INTERACTIVE KANBAN TASK BOARD                     -->
+                <!-- ========================================================= -->
+                <section id="view-kanban" class="view-section hidden view-animate space-y-6">
+                    <!-- Kanban Header & Controls -->
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Kanban Task Board</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Manage deliverables across workflow stages. All changes persist automatically.</p>
+                        </div>
+
+                        <div class="flex flex-wrap items-center gap-3">
+                            <!-- Priority Filter Pills -->
+                            <div class="flex items-center bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 text-xs">
+                                <button onclick="setKanbanPriorityFilter('All')" data-prio="All" class="prio-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-brand-600 text-white">All</button>
+                                <button onclick="setKanbanPriorityFilter('High')" data-prio="High" class="prio-filter-btn px-3 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">High</button>
+                                <button onclick="setKanbanPriorityFilter('Medium')" data-prio="Medium" class="prio-filter-btn px-3 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Medium</button>
+                                <button onclick="setKanbanPriorityFilter('Low')" data-prio="Low" class="prio-filter-btn px-3 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">Low</button>
+                            </div>
+
+                            <button onclick="openCreateModal('task')" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-2">
+                                <i class="fa-solid fa-plus"></i> Add Task
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 4 Kanban Columns Grid -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5 items-start">
+                        
+                        <!-- Column 1: To Do -->
+                        <div class="rounded-2xl bg-slate-100/80 dark:bg-slateDark-900/90 border border-slate-200/80 dark:border-slate-800 p-4">
+                            <div class="flex items-center justify-between mb-4 px-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-slate-400"></span>
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">To Do</h3>
+                                </div>
+                                <span id="count-todo" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-white dark:bg-slateDark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">0</span>
+                            </div>
+                            <div id="col-todo" class="space-y-3 min-h-[220px]"></div>
+                        </div>
+
+                        <!-- Column 2: In Progress -->
+                        <div class="rounded-2xl bg-slate-100/80 dark:bg-slateDark-900/90 border border-slate-200/80 dark:border-slate-800 p-4">
+                            <div class="flex items-center justify-between mb-4 px-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-brand-500"></span>
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">In Progress</h3>
+                                </div>
+                                <span id="count-inprogress" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-white dark:bg-slateDark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">0</span>
+                            </div>
+                            <div id="col-inprogress" class="space-y-3 min-h-[220px]"></div>
+                        </div>
+
+                        <!-- Column 3: Review -->
+                        <div class="rounded-2xl bg-slate-100/80 dark:bg-slateDark-900/90 border border-slate-200/80 dark:border-slate-800 p-4">
+                            <div class="flex items-center justify-between mb-4 px-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-amber-500"></span>
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">Review</h3>
+                                </div>
+                                <span id="count-review" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-white dark:bg-slateDark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">0</span>
+                            </div>
+                            <div id="col-review" class="space-y-3 min-h-[220px]"></div>
+                        </div>
+
+                        <!-- Column 4: Completed -->
+                        <div class="rounded-2xl bg-slate-100/80 dark:bg-slateDark-900/90 border border-slate-200/80 dark:border-slate-800 p-4">
+                            <div class="flex items-center justify-between mb-4 px-1">
+                                <div class="flex items-center gap-2">
+                                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
+                                    <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">Completed</h3>
+                                </div>
+                                <span id="count-completed" class="px-2.5 py-0.5 text-xs font-bold rounded-full bg-white dark:bg-slateDark-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700">0</span>
+                            </div>
+                            <div id="col-completed" class="space-y-3 min-h-[220px]"></div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 3: CLIENT DIRECTORY TABLE                            -->
+                <!-- ========================================================= -->
+                <section id="view-clients" class="view-section hidden view-animate space-y-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Client Directory</h1>
+                            <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Track active retainers, project budgets, and contract statuses.</p>
+                        </div>
+                        <button onclick="openCreateModal('project')" class="px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-sm flex items-center gap-2 self-start">
+                            <i class="fa-solid fa-plus"></i> Add Client Project
+                        </button>
+                    </div>
+
+                    <!-- Filter & Search Controls -->
+                    <div class="p-4 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                        <div class="relative flex-1 max-w-md">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+                            <input type="text" id="client-search-input" oninput="renderClientsTable()" placeholder="Filter by client, company, or project..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-brand-500">
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <label class="text-xs font-medium text-slate-500 dark:text-slate-400">Status:</label>
+                            <select id="client-status-filter" onchange="renderClientsTable()" class="px-3.5 py-2 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white border border-transparent focus:border-brand-500 focus:outline-none">
+                                <option value="All">All Statuses</option>
+                                <option value="Active">Active</option>
+                                <option value="In Review">In Review</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <!-- Responsive Table Card -->
+                    <div class="rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left border-collapse">
+                                <thead>
+                                    <tr class="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-slate-50/70 dark:bg-slateDark-850/70">
+                                        <th class="py-4 px-6">Client &amp; Organization</th>
+                                        <th class="py-4 px-6">Project Scope</th>
+                                        <th class="py-4 px-6">Status</th>
+                                        <th class="py-4 px-6">Contract Budget</th>
+                                        <th class="py-4 px-6">Deadline</th>
+                                        <th class="py-4 px-6 text-right">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="clients-table-body" class="divide-y divide-slate-200 dark:divide-slate-800 text-sm">
+                                    <!-- Populated via JS -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 4: REVENUE & ANALYTICS                               -->
+                <!-- ========================================================= -->
+                <section id="view-analytics" class="view-section hidden view-animate space-y-6">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Revenue &amp; Financial Analytics</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Detailed breakdown of agency retainers, profit margins, and service distribution.</p>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+                        <div class="p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Annualized Run Rate (ARR)</p>
+                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white mt-2">$341,400</h3>
+                            <p class="text-xs text-emerald-500 font-medium mt-2"><i class="fa-solid fa-arrow-up mr-1"></i> +31.4% YoY Growth</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Net Operating Margin</p>
+                            <h3 class="text-3xl font-bold text-slate-900 dark:text-white mt-2">78.4%</h3>
+                            <p class="text-xs text-slate-400 mt-2">Low cloud &amp; tooling overhead</p>
+                        </div>
+                        <div class="p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800">
+                            <p class="text-xs font-semibold uppercase tracking-wider text-slate-400">Avg. Contract Value</p>
+                            <h3 id="analytics-avg-budget" class="text-3xl font-bold text-slate-900 dark:text-white mt-2">$6,850</h3>
+                            <p class="text-xs text-brand-500 font-medium mt-2">Fixed-price &amp; milestone contracts</p>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                        <div class="lg:col-span-7 p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Net Profit Trajectory</h3>
+                            <div class="h-72">
+                                <canvas id="analyticsProfitChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-5 p-6 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800">
+                            <h3 class="text-base font-bold text-slate-900 dark:text-white mb-4">Revenue by Service Line</h3>
+                            <div class="h-72 flex items-center justify-center">
+                                <canvas id="analyticsServiceChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ========================================================= -->
+                <!-- VIEW 5: WORKSPACE SETTINGS                                -->
+                <!-- ========================================================= -->
+                <section id="view-settings" class="view-section hidden view-animate space-y-6 max-w-3xl">
+                    <div>
+                        <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 dark:text-white">Workspace Settings</h1>
+                        <p class="text-sm text-slate-500 dark:text-slate-400 mt-1">Customize your agency profile, appearance preferences, and demo state.</p>
+                    </div>
+
+                    <div class="p-6 sm:p-8 rounded-2xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 space-y-6">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Lead Architect / Owner Name</label>
+                                <input type="text" id="settings-owner-input" value="Inaam Farid" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold uppercase tracking-wider text-slate-400 mb-2">Agency / Workspace Title</label>
+                                <input type="text" id="settings-agency-input" value="Lead Architect • Pro Plan" class="w-full px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-slate-200 dark:border-slate-700 text-sm text-slate-900 dark:text-white focus:outline-none focus:border-brand-500">
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-slate-200 dark:border-slate-800 flex flex-wrap items-center justify-between gap-4">
+                            <div>
+                                <p class="text-sm font-semibold text-slate-900 dark:text-white">Reset Workspace Demo Data</p>
+                                <p class="text-xs text-slate-400">Restore default Kanban tasks and client directory records in localStorage.</p>
+                            </div>
+                            <button onclick="resetAllDemoData()" class="px-4 py-2 rounded-xl bg-rose-50 dark:bg-rose-500/15 text-rose-600 dark:text-rose-400 hover:bg-rose-100 text-xs font-semibold transition-all">
+                                Reset to Defaults
+                            </button>
+                        </div>
+
+                        <div class="flex justify-end">
+                            <button onclick="saveWorkspaceSettings()" class="px-6 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-sm font-semibold shadow-sm">
+                                Save Preferences
+                            </button>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ========================================================= -->
+    <!-- UNIFIED '+ NEW PROJECT / TASK' MODAL                      -->
+    <!-- ========================================================= -->
+    <div id="create-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-slate-950/70 backdrop-blur-sm">
+        <div class="w-full max-w-lg rounded-3xl bg-white dark:bg-slateDark-900 border border-slate-200 dark:border-slate-800 shadow-2xl overflow-hidden view-animate">
+            <!-- Modal Header with Mode Switcher -->
+            <div class="px-6 py-4 bg-slate-50 dark:bg-slateDark-850 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+                <div class="flex items-center gap-2 bg-slate-200/70 dark:bg-slateDark-950 p-1 rounded-xl text-xs font-semibold">
+                    <button type="button" onclick="switchModalTab('project')" id="tab-new-project" class="px-3.5 py-1.5 rounded-lg bg-white dark:bg-slateDark-800 text-slate-900 dark:text-white shadow-sm">
+                        + Client Project
+                    </button>
+                    <button type="button" onclick="switchModalTab('task')" id="tab-new-task" class="px-3.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400">
+                        + Kanban Task
+                    </button>
+                </div>
+                <button onclick="closeCreateModal()" class="w-8 h-8 rounded-full bg-slate-200/70 dark:bg-slateDark-800 text-slate-500 hover:text-slate-900 dark:hover:text-white flex items-center justify-center">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Form 1: New Client Project -->
+            <form id="form-new-project" onsubmit="handleCreateProject(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Client Name *</label>
+                        <input type="text" id="proj-client-name" required placeholder="e.g., Sarah Jenkins" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Company / Brand *</label>
+                        <input type="text" id="proj-company" required placeholder="e.g., NovaPay Inc." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Project Title *</label>
+                    <input type="text" id="proj-title" required placeholder="e.g., Full Stack SaaS Analytics Portal" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Budget (USD) *</label>
+                        <input type="number" id="proj-budget" required min="100" step="50" value="4500" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Status</label>
+                        <select id="proj-status" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none">
+                            <option value="Active">Active</option>
+                            <option value="In Review">In Review</option>
+                            <option value="Completed">Completed</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Target Date</label>
+                        <input type="date" id="proj-deadline" required class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-white">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-sm">
+                        Create Project &amp; Sync
+                    </button>
+                </div>
+            </form>
+
+            <!-- Form 2: New Kanban Task -->
+            <form id="form-new-task" onsubmit="handleCreateTask(event)" class="hidden p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Task Deliverable Title *</label>
+                    <input type="text" id="task-title" required placeholder="e.g., Implement OAuth2 & Role-Based Permissions" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Description / Technical Notes</label>
+                    <textarea id="task-desc" rows="2" placeholder="Brief implementation details..." class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 border border-transparent focus:border-brand-500 text-sm text-slate-900 dark:text-white focus:outline-none"></textarea>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Client / Tag</label>
+                        <input type="text" id="task-tag" value="Apex FinTech" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Priority</label>
+                        <select id="task-priority" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none">
+                            <option value="High">High</option>
+                            <option value="Medium" selected>Medium</option>
+                            <option value="Low">Low</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1.5">Initial Stage</label>
+                        <select id="task-stage" class="w-full px-3.5 py-2.5 rounded-xl bg-slate-100 dark:bg-slateDark-800 text-sm text-slate-900 dark:text-white focus:outline-none">
+                            <option value="todo">To Do</option>
+                            <option value="inprogress">In Progress</option>
+                            <option value="review">Review</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="pt-3 flex items-center justify-end gap-3 border-t border-slate-200 dark:border-slate-800">
+                    <button type="button" onclick="closeCreateModal()" class="px-4 py-2 rounded-xl text-xs font-semibold text-slate-500 hover:text-slate-800 dark:hover:text-white">Cancel</button>
+                    <button type="submit" class="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white text-xs sm:text-sm font-semibold shadow-sm">
+                        Add to Kanban Board
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Notification Banner -->
+    <div id="toast-banner" class="fixed bottom-5 right-5 z-50 hidden items-center gap-3 px-4 py-3 rounded-2xl bg-slate-900 dark:bg-white text-white dark:text-slate-900 text-xs sm:text-sm font-semibold shadow-xl">
+        <i class="fa-solid fa-circle-check text-emerald-400 dark:text-emerald-600"></i>
+        <span id="toast-text">Action completed</span>
+    </div>
+
+    <!-- JAVASCRIPT STATE & INTERACTIVITY -->
+    <script>
+        // =========================================================================
+        // 1. DEFAULT DATA & LOCALSTORAGE STATE MANAGEMENT
+        // =========================================================================
+        const STORAGE_KEYS = {
+            TASKS: 'taskflow_pro_tasks_v1',
+            CLIENTS: 'taskflow_pro_clients_v1',
+            SETTINGS: 'taskflow_pro_settings_v1',
+            THEME: 'taskflow_pro_theme_v1'
+        };
+
+        const defaultTasks = [
+            {
+                id: 't-101',
+                title: 'Architect Multi-Tenant PostgreSQL Schema',
+                desc: 'Design row-level security policies and indexing for SaaS client workspaces.',
+                tag: 'Apex FinTech',
+                priority: 'High',
+                stage: 'completed',
+                dueDate: 'Nov 14'
+            },
+            {
+                id: 't-102',
+                title: 'Stripe Connect Subscription Webhooks',
+                desc: 'Handle recurring agency retainers, invoice PDF generation, and failed payment retries.',
+                tag: 'Lumina Health',
+                priority: 'High',
+                stage: 'inprogress',
+                dueDate: 'Nov 21'
+            },
+            {
+                id: 't-103',
+                title: 'Interactive Executive Analytics Dashboard',
+                desc: 'Build responsive Chart.js visualizations with CSV export and date range filters.',
+                tag: 'Vanguard Logistics',
+                priority: 'Medium',
+                stage: 'review',
+                dueDate: 'Nov 20'
+            },
+            {
+                id: 't-104',
+                title: 'Python FastAPI Microservice Rate Limiter',
+                desc: 'Implement Redis token-bucket throttling for public partner API endpoints.',
+                tag: 'CloudPulse AI',
+                priority: 'High',
+                stage: 'todo',
+                dueDate: 'Nov 24'
+            },
+            {
+                id: 't-105',
+                title: 'Design System & Dark Mode Accessibility Audit',
+                desc: 'Verify WCAG AA contrast ratios across all modal dialogs and form inputs.',
+                tag: 'Internal UI',
+                priority: 'Low',
+                stage: 'todo',
+                dueDate: 'Nov 27'
+            },
+            {
+                id: 't-106',
+                title: 'Automated E2E Playwright Test Suite',
+                desc: 'Cover authentication flows, Kanban state transitions, and billing checkout.',
+                tag: 'Apex FinTech',
+                priority: 'Medium',
+                stage: 'completed',
+                dueDate: 'Nov 12'
+            }
+        ];
+
+        const defaultClients = [
+            {
+                id: 'c-1',
+                clientName: 'Marcus Vance',
+                company: 'Apex FinTech Labs',
+                email: 'marcus@apexfintech.io',
+                projectTitle: 'Next-Gen Treasury & Escrow Platform',
+                status: 'Active',
+                budget: 12500,
+                deadline: '2026-12-15'
+            },
+            {
+                id: 'c-2',
+                clientName: 'Elena Rostova',
+                company: 'Lumina HealthTech',
+                email: 'elena@luminahealth.com',
+                projectTitle: 'Patient Telehealth Portal & HIPAA API',
+                status: 'Active',
+                budget: 8400,
+                deadline: '2026-12-05'
+            },
+            {
+                id: 'c-3',
+                clientName: 'David Chen',
+                company: 'CloudPulse AI',
+                email: 'dchen@cloudpulse.ai',
+                projectTitle: 'LLM Workflow Orchestration Dashboard',
+                status: 'In Review',
+                budget: 6800,
+                deadline: '2026-11-28'
+            },
+            {
+                id: 'c-4',
+                clientName: 'Sophia Al-Mansoor',
+                company: 'Vanguard Global Logistics',
+                email: 'sophia@vanguardfreight.co',
+                projectTitle: 'Real-Time Fleet Telemetry Web App',
+                status: 'Completed',
+                budget: 9200,
+                deadline: '2026-11-10'
+            }
+        ];
+
+        let tasksState = [];
+        let clientsState = [];
+        let activeKanbanPriority = 'All';
+        let globalSearchTerm = '';
+        let overviewChartInstance = null;
+        let currentChartType = 'bar';
+
+        function loadState() {
+            try {
+                const savedTasks = localStorage.getItem(STORAGE_KEYS.TASKS);
+                const savedClients = localStorage.getItem(STORAGE_KEYS.CLIENTS);
+                const savedSettings = localStorage.getItem(STORAGE_KEYS.SETTINGS);
+
+                tasksState = savedTasks ? JSON.parse(savedTasks) : [...defaultTasks];
+                clientsState = savedClients ? JSON.parse(savedClients) : [...defaultClients];
+
+                if (savedSettings) {
+                    const parsed = JSON.parse(savedSettings);
+                    applyOwnerSettings(parsed.ownerName, parsed.agencyTitle);
+                }
+            } catch (err) {
+                tasksState = [...defaultTasks];
+                clientsState = [...defaultClients];
+            }
+        }
+
+        function saveState() {
+            try {
+                localStorage.setItem(STORAGE_KEYS.TASKS, JSON.stringify(tasksState));
+                localStorage.setItem(STORAGE_KEYS.CLIENTS, JSON.stringify(clientsState));
+            } catch (err) {
+                console.warn('LocalStorage write skipped');
+            }
+            updateAllMetrics();
+        }
+
+        // =========================================================================
+        // 2. NAVIGATION, SIDEBAR & THEME CONTROLS
+        // =========================================================================
+        function switchView(viewName) {
+            // Hide all sections
+            document.querySelectorAll('.view-section').forEach(sec => sec.classList.add('hidden'));
+            
+            // Show target section
+            const target = document.getElementById(`view-${viewName}`);
+            if (target) {
+                target.classList.remove('hidden');
+            }
+
+            // Update active nav item styling
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                if (btn.dataset.view === viewName) {
+                    btn.className = 'nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400';
+                } else {
+                    btn.className = 'nav-item w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slateDark-800 transition-all';
+                }
+            });
+
+            // Close mobile sidebar if open
+            const sidebar = document.getElementById('sidebar');
+            if (!sidebar.classList.contains('-translate-x-full') && window.innerWidth < 1024) {
+                toggleMobileSidebar();
+            }
+
+            if (viewName === 'analytics') {
+                initSecondaryCharts();
+            }
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('sidebar-backdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleTheme() {
+            const htmlEl = document.documentElement;
+            const isDark = htmlEl.classList.toggle('dark');
+            const icon = document.getElementById('theme-icon');
+            icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+
+            try {
+                localStorage.setItem(STORAGE_KEYS.THEME, isDark ? 'dark' : 'light');
+            } catch (e) {}
+
+            // Re-render charts so grid line colors match theme
+            renderOverviewChart(currentChartType);
+        }
+
+        function initTheme() {
+            try {
+                const savedTheme = localStorage.getItem(STORAGE_KEYS.THEME);
+                if (savedTheme === 'light') {
+                    document.documentElement.classList.remove('dark');
+                    document.getElementById('theme-icon').className = 'fa-solid fa-moon';
+                }
+            } catch (e) {}
+        }
+
+        // =========================================================================
+        // 3. KPI METRICS & OVERVIEW SYNC
+        // =========================================================================
+        function updateAllMetrics() {
+            const totalTasks = tasksState.length;
+            const completedTasks = tasksState.filter(t => t.stage === 'completed').length;
+            const activeProjectsCount = clientsState.filter(c => c.status !== 'Completed').length;
+            const totalBudget = clientsState.reduce((sum, c) => sum + Number(c.budget || 0), 0);
+
+            document.getElementById('sidebar-task-badge').textContent = totalTasks;
+            document.getElementById('sidebar-client-badge').textContent = clientsState.length;
+            document.getElementById('kpi-active-projects').textContent = activeProjectsCount;
+            document.getElementById('kpi-monthly-revenue').textContent = `$${totalBudget.toLocaleString()}`;
+            document.getElementById('kpi-tasks-completed').textContent = `${completedTasks}/${totalTasks}`;
+
+            const completionPct = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
+            document.getElementById('overview-progress-pct').textContent = `${completionPct}%`;
+            document.getElementById('overview-progress-bar').style.width = `${completionPct}%`;
+
+            // Render Priority Queue on Overview
+            const priorityList = document.getElementById('overview-priority-list');
+            const upcomingTasks = tasksState.filter(t => t.stage !== 'completed').slice(0, 4);
+
+            if (upcomingTasks.length === 0) {
+                priorityList.innerHTML = `<p class="text-xs text-slate-400 py-6 text-center">All sprint deliverables completed!</p>`;
+            } else {
+                priorityList.innerHTML = upcomingTasks.map(task => `
+                    <div class="p-3 rounded-xl bg-slate-50 dark:bg-slateDark-850 border border-slate-200/70 dark:border-slate-800 flex items-start justify-between gap-3">
+                        <div class="min-w-0">
+                            <p class="text-xs font-semibold text-slate-800 dark:text-slate-100 truncate">${task.title}</p>
+                            <p class="text-[11px] text-slate-400 mt-0.5">${task.tag} • Due ${task.dueDate}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-md text-[10px] font-bold shrink-0 ${getPriorityBadgeClasses(task.priority)}">
+                            ${task.priority}
+                        </span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        // =========================================================================
+        // 4. KANBAN TASK BOARD RENDERING & ACTIONS
+        // =========================================================================
+        function getPriorityBadgeClasses(priority) {
+            if (priority === 'High') return 'bg-rose-50 text-rose-600 dark:bg-rose-500/15 dark:text-rose-400';
+            if (priority === 'Medium') return 'bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400';
+            return 'bg-sky-50 text-sky-600 dark:bg-sky-500/15 dark:text-sky-400';
+        }
+
+        function setKanbanPriorityFilter(prio) {
+            activeKanbanPriority = prio;
+            document.querySelectorAll('.prio-filter-btn').forEach(btn => {
+                if (btn.dataset.prio === prio) {
+                    btn.className = 'prio-filter-btn px-3 py-1.5 rounded-lg font-semibold bg-brand-600 text-white';
+                } else {
+                    btn.className = 'prio-filter-btn px-3 py-1.5 rounded-lg font-medium text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white';
+                }
+            });
+            renderKanbanBoard();
+        }
+
+        function renderKanbanBoard() {
+            const stages = ['todo', 'inprogress', 'review', 'completed'];
+
+            stages.forEach(stage => {
+                const colEl = document.getElementById(`col-${stage}`);
+                const countEl = document.getElementById(`count-${stage}`);
+
+                const filtered = tasksState.filter(task => {
+                    const matchesStage = task.stage === stage;
+                    const matchesPrio = activeKanbanPriority === 'All' || task.priority === activeKanbanPriority;
+                    const matchesSearch = !globalSearchTerm || 
+                        task.title.toLowerCase().includes(globalSearchTerm) || 
+                        task.tag.toLowerCase().includes(globalSearchTerm);
+                    return matchesStage && matchesPrio && matchesSearch;
+                });
+
+                countEl.textContent = filtered.length;
+
+                if (filtered.length === 0) {
+                    colEl.innerHTML = `
+                        <div class="border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl p-6 text-center text-xs text-slate-400">
+                            No tasks in this stage
+                        </div>
+                    `;
+                    return;
+                }
+
+                colEl.innerHTML = filtered.map(task => `
+                    <div class="p-4 rounded-xl bg-white dark:bg-slateDark-850 border border-slate-200/90 dark:border-slate-800 shadow-sm hover:border-brand-500/50 transition-all group">
+                        <div class="flex items-center justify-between gap-2 mb-2.5">
+                            <span class="px-2 py-0.5 rounded-md text-[10px] font-bold ${getPriorityBadgeClasses(task.priority)}">
+                                ${task.priority}
+                            </span>
+                            <button onclick="deleteTask('${task.id}')" class="text-slate-400 hover:text-rose-500 text-xs opacity-70 group-hover:opacity-100 transition-opacity" title="Delete Task">
+                                <i class="fa-solid fa-trash-can"></i>
+                            </button>
+                        </div>
+
+                        <h4 class="text-sm font-semibold text-slate-900 dark:text-white leading-snug mb-1.5">
+                            ${task.title}
+                        </h4>
+                        <p class="text-xs text-slate-500 dark:text-slate-400 line-clamp-2 mb-3">
+                            ${task.desc || 'Deliverable scoped for sprint milestone.'}
+                        </p>
+
+                        <div class="flex items-center justify-between text-[11px] text-slate-400 pb-3 border-b border-slate-100 dark:border-slate-800">
+                            <span class="font-medium text-brand-500 dark:text-brand-400">${task.tag}</span>
+                            <span><i class="fa-regular fa-clock mr-1"></i>${task.dueDate}</span>
+                        </div>
+
+                        <!-- Stage Move Controls -->
+                        <div class="pt-2.5 flex items-center justify-between gap-2">
+                            <label class="text-[10px] uppercase tracking-wider text-slate-400 font-semibold">Move:</label>
+                            <select onchange="moveTaskStage('${task.id}', this.value)" class="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slateDark-900 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:border-brand-500">
+                                <option value="todo" ${task.stage === 'todo' ? 'selected' : ''}>To Do</option>
+                                <option value="inprogress" ${task.stage === 'inprogress' ? 'selected' : ''}>In Progress</option>
+                                <option value="review" ${task.stage === 'review' ? 'selected' : ''}>Review</option>
+                                <option value="completed" ${task.stage === 'completed' ? 'selected' : ''}>Completed</option>
+                            </select>
+                        </div>
+                    </div>
+                `).join('');
+            });
+        }
+
+        function moveTaskStage(taskId, newStage) {
+            const idx = tasksState.findIndex(t => t.id === taskId);
+            if (idx !== -1) {
+                tasksState[idx].stage = newStage;
+                saveState();
+                renderKanbanBoard();
+                showToast('Task stage updated');
+            }
+        }
+
+        function deleteTask(taskId) {
+            tasksState = tasksState.filter(t => t.id !== taskId);
+            saveState();
+            renderKanbanBoard();
+            showToast('Task removed from board');
+        }
+
+        // =========================================================================
+        // 5. CLIENT DIRECTORY TABLE RENDERING & FILTERING
+        // =========================================================================
+        function getStatusBadge(status) {
+            if (status === 'Active') {
+                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 dark:bg-emerald-500/15 dark:text-emerald-400"><span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Active</span>`;
+            }
+            if (status === 'In Review') {
+                return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-600 dark:bg-amber-500/15 dark:text-amber-400"><span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>In Review</span>`;
+            }
+            return `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-brand-50 text-brand-600 dark:bg-brand-500/15 dark:text-brand-400"><span class="w-1.5 h-1.5 rounded-full bg-brand-500"></span>Completed</span>`;
+        }
+
+        function renderClientsTable() {
+            const tbody = document.getElementById('clients-table-body');
+            const localQuery = (document.getElementById('client-search-input')?.value || '').toLowerCase();
+            const statusFilter = document.getElementById('client-status-filter')?.value || 'All';
+            const combinedQuery = localQuery || globalSearchTerm;
+
+            const filtered = clientsState.filter(c => {
+                const matchesStatus = statusFilter === 'All' || c.status === statusFilter;
+                const matchesText = !combinedQuery ||
+                    c.clientName.toLowerCase().includes(combinedQuery) ||
+                    c.company.toLowerCase().includes(combinedQuery) ||
+                    c.projectTitle.toLowerCase().includes(combinedQuery);
+                return matchesStatus && matchesText;
+            });
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="py-10 text-center text-sm text-slate-400">No matching client contracts found.</td>
+                    </tr>
+                `;
+                return;
+            }
+
+            tbody.innerHTML = filtered.map(client => `
+                <tr class="hover:bg-slate-50/80 dark:hover:bg-slateDark-850/60 transition-colors">
+                    <td class="py-4 px-6">
+                        <div class="flex items-center gap-3">
+                            <div class="w-9 h-9 rounded-full bg-brand-100 dark:bg-brand-500/20 text-brand-700 dark:text-brand-300 font-bold text-xs flex items-center justify-center shrink-0">
+                                ${client.clientName.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                            </div>
+                            <div>
+                                <p class="font-semibold text-slate-900 dark:text-white">${client.clientName}</p>
+                                <p class="text-xs text-slate-400">${client.company}</p>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="py-4 px-6 font-medium text-slate-700 dark:text-slate-300">${client.projectTitle}</td>
+                    <td class="py-4 px-6">${getStatusBadge(client.status)}</td>
+                    <td class="py-4 px-6 font-bold text-slate-900 dark:text-white">$${Number(client.budget).toLocaleString()}</td>
+                    <td class="py-4 px-6 text-xs text-slate-500 dark:text-slate-400">${client.deadline}</td>
+                    <td class="py-4 px-6 text-right">
+                        <button onclick="cycleClientStatus('${client.id}')" class="px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slateDark-800 hover:bg-brand-500 hover:text-white text-xs font-medium text-slate-600 dark:text-slate-300 transition-colors" title="Cycle Status">
+                            Update Status
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function cycleClientStatus(clientId) {
+            const order = ['Active', 'In Review', 'Completed'];
+            const client = clientsState.find(c => c.id === clientId);
+            if (client) {
+                const nextIdx = (order.indexOf(client.status) + 1) % order.length;
+                client.status = order[nextIdx];
+                saveState();
+                renderClientsTable();
+                showToast(`Updated ${client.company} to ${client.status}`);
+            }
+        }
+
+        // =========================================================================
+        // 6. GLOBAL HEADER SEARCH & NOTIFICATIONS
+        // =========================================================================
+        function handleGlobalSearch(query) {
+            globalSearchTerm = query.trim().toLowerCase();
+            renderKanbanBoard();
+            renderClientsTable();
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notif-dropdown').classList.toggle('hidden');
+        }
+
+        function markNotificationsRead() {
+            document.getElementById('notif-dot').classList.add('hidden');
+            document.getElementById('notif-dropdown').classList.add('hidden');
+            showToast('All notifications marked as read');
+        }
+
+        // =========================================================================
+        // 7. UNIFIED '+ NEW PROJECT / TASK' MODAL LOGIC
+        // =========================================================================
+        function openCreateModal(defaultTab = 'project') {
+            const modal = document.getElementById('create-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            switchModalTab(defaultTab);
+
+            // Set default date 14 days ahead
+            const future = new Date(Date.now() + 14 * 86400000).toISOString().split('T')[0];
+            document.getElementById('proj-deadline').value = future;
+        }
+
+        function closeCreateModal() {
+            const modal = document.getElementById('create-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        function switchModalTab(tab) {
+            const projForm = document.getElementById('form-new-project');
+            const taskForm = document.getElementById('form-new-task');
+            const projTabBtn = document.getElementById('tab-new-project');
+            const taskTabBtn = document.getElementById('tab-new-task');
+
+            if (tab === 'project') {
+                projForm.classList.remove('hidden');
+                taskForm.classList.add('hidden');
+                projTabBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white dark:bg-slateDark-800 text-slate-900 dark:text-white shadow-sm';
+                taskTabBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400';
+            } else {
+                taskForm.classList.remove('hidden');
+                projForm.classList.add('hidden');
+                taskTabBtn.className = 'px-3.5 py-1.5 rounded-lg bg-white dark:bg-slateDark-800 text-slate-900 dark:text-white shadow-sm';
+                projTabBtn.className = 'px-3.5 py-1.5 rounded-lg text-slate-500 dark:text-slate-400';
+            }
+        }
+
+        function handleCreateProject(e) {
+            e.preventDefault();
+            const clientName = document.getElementById('proj-client-name').value.trim();
+            const company = document.getElementById('proj-company').value.trim();
+            const projectTitle = document.getElementById('proj-title').value.trim();
+            const budget = Number(document.getElementById('proj-budget').value) || 3000;
+            const status = document.getElementById('proj-status').value;
+            const deadline = document.getElementById('proj-deadline').value;
+
+            const newClient = {
+                id: 'c-' + Date.now(),
+                clientName,
+                company,
+                email: `${clientName.toLowerCase().replace(/\s+/g, '.')}@client.io`,
+                projectTitle,
+                status,
+                budget,
+                deadline
+            };
+
+            clientsState.unshift(newClient);
+
+            // Also auto-create an initial kickoff task on the Kanban board
+            tasksState.unshift({
+                id: 't-' + (Date.now() + 1),
+                title: `Kickoff & Architecture: ${projectTitle}`,
+                desc: `Initial sprint scoping and repository setup for ${company}.`,
+                tag: company,
+                priority: 'High',
+                stage: 'todo',
+                dueDate: 'Next Week'
+            });
+
+            saveState();
+            renderClientsTable();
+            renderKanbanBoard();
+            e.target.reset();
+            closeCreateModal();
+            showToast(`Added project "${projectTitle}" & synced sprint task`);
+        }
+
+        function handleCreateTask(e) {
+            e.preventDefault();
+            const title = document.getElementById('task-title').value.trim();
+            const desc = document.getElementById('task-desc').value.trim();
+            const tag = document.getElementById('task-tag').value.trim() || 'Agency Sprint';
+            const priority = document.getElementById('task-priority').value;
+            const stage = document.getElementById('task-stage').value;
+
+            tasksState.unshift({
+                id: 't-' + Date.now(),
+                title,
+                desc,
+                tag,
+                priority,
+                stage,
+                dueDate: 'Nov 30'
+            });
+
+            saveState();
+            renderKanbanBoard();
+            e.target.reset();
+            closeCreateModal();
+            showToast('New deliverable added to Kanban Board');
+        }
+
+        // =========================================================================
+        // 8. CHART.JS INTERACTIVE ANALYTICS
+        // =========================================================================
+        function renderOverviewChart(type = 'bar') {
+            currentChartType = type;
+            const ctx = document.getElementById('overviewRevenueChart');
+            if (!ctx) return;
+
+            // Update toggle button styles
+            const barBtn = document.getElementById('btn-chart-bar');
+            const lineBtn = document.getElementById('btn-chart-line');
+            if (barBtn && lineBtn) {
+                barBtn.className = type === 'bar'
+                    ? 'px-3 py-1.5 rounded-lg font-medium bg-white dark:bg-slateDark-900 text-slate-900 dark:text-white shadow-sm'
+                    : 'px-3 py-1.5 rounded-lg font-medium text-slate-500 dark:text-slate-400';
+                lineBtn.className = type === 'line'
+                    ? 'px-3 py-1.5 rounded-lg font-medium bg-white dark:bg-slateDark-900 text-slate-900 dark:text-white shadow-sm'
+                    : 'px-3 py-1.5 rounded-lg font-medium text-slate-500 dark:text-slate-400';
+            }
+
+            if (overviewChartInstance) {
+                overviewChartInstance.destroy();
+            }
+
+            const isDark = document.documentElement.classList.contains('dark');
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(148, 163, 184, 0.2)';
+            const tickColor = isDark ? '#94a3b8' : '#64748b';
+
+            overviewChartInstance = new Chart(ctx, {
+                type: type,
+                data: {
+                    labels: ['May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov'],
+                    datasets: [
+                        {
+                            label: 'Gross Revenue ($)',
+                            data: [16400, 19200, 18500, 22800, 24900, 26100, 28450],
+                            backgroundColor: type === 'bar' ? '#6366f1' : 'rgba(99, 102, 241, 0.18)',
+                            borderColor: '#6366f1',
+                            borderWidth: 2.5,
+                            borderRadius: 8,
+                            tension: 0.35,
+                            fill: type === 'line'
+                        },
+                        {
+                            label: 'Operating Expenses ($)',
+                            data: [4200, 4600, 4300, 5100, 5400, 5800, 6100],
+                            backgroundColor: type === 'bar' ? '#10b981' : 'rgba(16, 185, 129, 0.15)',
+                            borderColor: '#10b981',
+                            borderWidth: 2.5,
+                            borderRadius: 8,
+                            tension: 0.35,
+                            fill: type === 'line'
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            labels: { color: tickColor, usePointStyle: true, boxWidth: 8 }
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: tickColor }
+                        },
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: {
+                                color: tickColor,
+                                callback: value => '$' + (value / 1000) + 'k'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateChartType(type) {
+            renderOverviewChart(type);
+        }
+
+        let profitChartInstance = null;
+        let serviceChartInstance = null;
+
+        function initSecondaryCharts() {
+            const isDark = document.documentElement.classList.contains('dark');
+            const tickColor = isDark ? '#94a3b8' : '#64748b';
+            const gridColor = isDark ? 'rgba(148, 163, 184, 0.1)' : 'rgba(148, 163, 184, 0.2)';
+
+            const profitCtx = document.getElementById('analyticsProfitChart');
+            if (profitCtx) {
+                if (profitChartInstance) profitChartInstance.destroy();
+                profitChartInstance = new Chart(profitCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Q1', 'Q2', 'Q3', 'Q4 (Est)'],
+                        datasets: [{
+                            label: 'Net Profit ($)',
+                            data: [41200, 53800, 66200, 79500],
+                            borderColor: '#6366f1',
+                            backgroundColor: 'rgba(99, 102, 241, 0.15)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { labels: { color: tickColor } } },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: tickColor } },
+                            y: { grid: { color: gridColor }, ticks: { color: tickColor } }
+                        }
+                    }
+                });
+            }
+
+            const serviceCtx = document.getElementById('analyticsServiceChart');
+            if (serviceCtx) {
+                if (serviceChartInstance) serviceChartInstance.destroy();
+                serviceChartInstance = new Chart(serviceCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Full Stack Web Apps', 'Python & AI Backends', 'UI/UX Design Systems', 'Cloud DevOps'],
+                        datasets: [{
+                            data: [45, 28, 17, 10],
+                            backgroundColor: ['#6366f1', '#10b981', '#f59e0b', '#8b5cf6'],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        cutout: '70%',
+                        plugins: {
+                            legend: { position: 'bottom', labels: { color: tickColor, padding: 16 } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // =========================================================================
+        // 9. SETTINGS & TOAST FEEDBACK
+        // =========================================================================
+        function applyOwnerSettings(ownerName, agencyTitle) {
+            if (ownerName) {
+                document.getElementById('sidebar-owner-name').textContent = ownerName;
+                document.getElementById('welcome-owner-name').textContent = ownerName;
+                document.getElementById('settings-owner-input').value = ownerName;
+            }
+            if (agencyTitle) {
+                document.getElementById('sidebar-agency-name').textContent = agencyTitle;
+                document.getElementById('settings-agency-input').value = agencyTitle;
+            }
+        }
+
+        function saveWorkspaceSettings() {
+            const ownerName = document.getElementById('settings-owner-input').value.trim() || 'Inaam Farid';
+            const agencyTitle = document.getElementById('settings-agency-input').value.trim() || 'Lead Architect • Pro Plan';
+
+            applyOwnerSettings(ownerName, agencyTitle);
+            try {
+                localStorage.setItem(STORAGE_KEYS.SETTINGS, JSON.stringify({ ownerName, agencyTitle }));
+            } catch (e) {}
+            showToast('Workspace settings saved');
+        }
+
+        function resetAllDemoData() {
+            tasksState = [...defaultTasks];
+            clientsState = [...defaultClients];
+            saveState();
+            renderKanbanBoard();
+            renderClientsTable();
+            showToast('Demo data restored to defaults');
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('toast-banner');
+            document.getElementById('toast-text').textContent = message;
+            toast.classList.remove('hidden');
+            toast.classList.add('flex');
+            setTimeout(() => {
+                toast.classList.add('hidden');
+                toast.classList.remove('flex');
+            }, 3000);
+        }
+
+        // =========================================================================
+        // 10. INITIALIZE APPLICATION ON LOAD
+        // =========================================================================
+        window.addEventListener('DOMContentLoaded', () => {
+            initTheme();
+            loadState();
+            updateAllMetrics();
+            renderKanbanBoard();
+            renderClientsTable();
+            renderOverviewChart('bar');
+        });
+    </script>
+</body>
+</html>
